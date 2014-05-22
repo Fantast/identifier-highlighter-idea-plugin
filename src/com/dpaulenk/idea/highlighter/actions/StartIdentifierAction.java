@@ -21,6 +21,6 @@ public class StartIdentifierAction extends AnAction {
         Application application = ApplicationManager.getApplication();
         IdentifierHighlighterAppComponent identHighlightComp = application.getComponent(IdentifierHighlighterAppComponent.class);
         Presentation p = ae.getPresentation();
-        p.setEnabled(identHighlightComp.isPluginEnabled());
+        p.setEnabled(identHighlightComp.getSettings().isPluginEnabled());
     }
 }

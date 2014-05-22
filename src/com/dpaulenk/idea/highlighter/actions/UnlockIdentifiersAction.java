@@ -22,6 +22,6 @@ public class UnlockIdentifiersAction extends AnAction {
         Application application = ApplicationManager.getApplication();
         IdentifierHighlighterAppComponent identHighlightComp = application.getComponent(IdentifierHighlighterAppComponent.class);
         Presentation p = ae.getPresentation();
-        p.setEnabled(identHighlightComp.isPluginEnabled() && identHighlightComp.areIdentifiersLocked(editor));
+        p.setEnabled(identHighlightComp.getSettings().isPluginEnabled() && identHighlightComp.areIdentifiersLocked(editor));
     }
 }

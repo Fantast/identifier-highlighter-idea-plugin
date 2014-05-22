@@ -10,7 +10,7 @@ public class EnablePluginAction extends ToggleAction {
     public boolean isSelected(AnActionEvent e) {
         Application application = ApplicationManager.getApplication();
         IdentifierHighlighterAppComponent identHighlightComp = application.getComponent(IdentifierHighlighterAppComponent.class);
-        return (identHighlightComp.isPluginEnabled());
+        return (identHighlightComp.getSettings().isPluginEnabled());
     }
 
     public void setSelected(AnActionEvent e, boolean state) {

@@ -1,8 +1,15 @@
 <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
 <idea-plugin url="https://github.com/Fantast/identifier-highlighter-idea-plugin">
     <name>Identifier Highlighter Again</name>
+    <version>1.00</version>
+    <vendor url="https://github.com/Fantast/identifier-highlighter-idea-plugin" email="dzmitry.paulenka@gmail.com">Dzmitry Paulenka</vendor>
+    <category>Editor</category>
+    <idea-version since-build="135.690"/>
+
     <description>
-        Highlights identifiers under caret.
+        <![CDATA[
+        <pre>
+        Highlights identifiers under caret.<br/>
         If more than one instance with the same identifier is used in the file, only the usages of that specific instance are highlighted.
         For parameters, local variables, and fields, a differentiation between reads and writes to that identifier are made with separate configurable colors.
         Use Shift+Alt+Up and Shift+Alt+Down to navigate up and down to each highlighted occurrence.
@@ -33,12 +40,22 @@
             + doesn't use IDEA's search, so doesn't overlaps with F3 logics
             + differentiates between read, writes, configurable colors
             + more navigation shortcuts
+        </pre>
+        ]]>
     </description>
-    
-    <version>1.00</version>
-    <vendor url="https://github.com/Fantast/identifier-highlighter-idea-plugin" email="dzmitry.paulenka@gmail.com">Dzmitry Paulenka</vendor>
-    <category>Editor</category>
-    <idea-version since-build="135.690"/>
+
+    <change-notes>
+        <![CDATA[
+            <ul>
+              <li>1.00
+                <ol>
+                  <li>Initial version.</li>
+                </ol>
+              </li>
+            </ul>
+        ]]>
+    </change-notes>
+
     <application-components>
         <component>
             <implementation-class>com.dpaulenk.idea.highlighter.IdentifierHighlighterAppComponent</implementation-class>
@@ -66,7 +83,7 @@
         <action id="EnablePugin" class="com.dpaulenk.idea.highlighter.actions.EnablePluginAction" text="Enable Plugin">
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt T"/>
         </action>
-        <group id="IdentifierHighlighterReborn.Menu" text="IdentifierHighlighter" popup="true">
+        <group id="IdentifierHighlighterAgain.Menu" text="IdentifierHighlighter" popup="true">
             <separator/>
             <reference ref="NextIdentifier"/>
             <reference ref="PreviousIdentifier"/>
@@ -78,16 +95,7 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </group>
     </actions>
-    <helpset file="IdentifierHighlighterHelp.jar" path="/helpset.hs"/>
-    <change-notes>
-        <![CDATA[
-    <ul>
-      <li>1.00
-        <ol>
-          <li>Initial version.</li>
-        </ol>
-      </li>
-    </ul>
-    ]]>
-    </change-notes>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable instance="com.dpaulenk.idea.highlighter.IdentifierHighlighterConfigurable" />
+    </extensions>
 </idea-plugin>

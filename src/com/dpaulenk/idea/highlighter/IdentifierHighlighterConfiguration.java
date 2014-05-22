@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.StringTokenizer;
 
 public class IdentifierHighlighterConfiguration {
@@ -336,12 +337,12 @@ public class IdentifierHighlighterConfiguration {
         });
         _defaultHighlightLayerB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                _highlightLayerCB.setSelectedItem(IdentifierHighlighterAppComponent.DEFAULT_HIGHLIGHT_LAYER);
+                _highlightLayerCB.setSelectedItem(IdentifierHighlighterSettings.DEFAULT_HIGHLIGHT_LAYER);
             }
         });
         _defaultShowInMarkerBarB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                _showInMarkerBarCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_SHOW_IN_MARKER_BAR);
+                _showInMarkerBarCB.setSelected(IdentifierHighlighterSettings.DEFAULT_SHOW_IN_MARKER_BAR);
             }
         });
         _pluginEnabledCB.addActionListener(new ActionListener() {
@@ -352,62 +353,62 @@ public class IdentifierHighlighterConfiguration {
     }
 
     protected void defaultAllHighlightColors() {
-        setStringToColorButton(_allActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_CLASS_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_allHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_CLASS_HIGHLIGHT_COLOR);
+        setStringToColorButton(_allActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_CLASS_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_allHighlightColorB, IdentifierHighlighterSettings.DEFAULT_CLASS_HIGHLIGHT_COLOR);
     }
 
     protected void defaultOtherHighlightColors() {
-        _otherHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_OTHER_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_otherActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_OTHER_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_otherHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_OTHER_HIGHLIGHT_COLOR);
+        _otherHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_OTHER_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_otherActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_OTHER_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_otherHighlightColorB, IdentifierHighlighterSettings.DEFAULT_OTHER_HIGHLIGHT_COLOR);
     }
 
     protected void defaultLocalReadHighlightColors() {
-        _localHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_LOCAL_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_localReadActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_LOCAL_READ_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_localReadHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_LOCAL_READ_HIGHLIGHT_COLOR);
+        _localHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_LOCAL_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_localReadActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_LOCAL_READ_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_localReadHighlightColorB, IdentifierHighlighterSettings.DEFAULT_LOCAL_READ_HIGHLIGHT_COLOR);
     }
 
     protected void defaultParamReadHighlightColors() {
-        _paramHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_PARAM_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_paramReadActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_PARAM_READ_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_paramReadHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_PARAM_READ_HIGHLIGHT_COLOR);
+        _paramHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_PARAM_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_paramReadActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_PARAM_READ_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_paramReadHighlightColorB, IdentifierHighlighterSettings.DEFAULT_PARAM_READ_HIGHLIGHT_COLOR);
     }
 
     protected void defaultFieldReadHighlightColors() {
-        _fieldHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_FIELD_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_fieldReadActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_FIELD_READ_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_fieldReadHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_FIELD_READ_HIGHLIGHT_COLOR);
+        _fieldHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_FIELD_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_fieldReadActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_FIELD_READ_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_fieldReadHighlightColorB, IdentifierHighlighterSettings.DEFAULT_FIELD_READ_HIGHLIGHT_COLOR);
     }
 
     protected void defaultLocalWriteHighlightColors() {
-        _localHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_LOCAL_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_localWriteActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_LOCAL_WRITE_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_localWriteHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_LOCAL_WRITE_HIGHLIGHT_COLOR);
+        _localHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_LOCAL_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_localWriteActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_LOCAL_WRITE_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_localWriteHighlightColorB, IdentifierHighlighterSettings.DEFAULT_LOCAL_WRITE_HIGHLIGHT_COLOR);
     }
 
     protected void defaultParamWriteHighlightColors() {
-        _paramHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_PARAM_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_paramWriteActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_PARAM_WRITE_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_paramWriteHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_PARAM_WRITE_HIGHLIGHT_COLOR);
+        _paramHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_PARAM_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_paramWriteActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_PARAM_WRITE_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_paramWriteHighlightColorB, IdentifierHighlighterSettings.DEFAULT_PARAM_WRITE_HIGHLIGHT_COLOR);
     }
 
     protected void defaultFieldWriteHighlightColors() {
-        _fieldHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_FIELD_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_fieldWriteActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_FIELD_WRITE_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_fieldWriteHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_FIELD_WRITE_HIGHLIGHT_COLOR);
+        _fieldHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_FIELD_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_fieldWriteActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_FIELD_WRITE_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_fieldWriteHighlightColorB, IdentifierHighlighterSettings.DEFAULT_FIELD_WRITE_HIGHLIGHT_COLOR);
     }
 
     protected void defaultMethodHighlightColors() {
-        _methodHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_METHOD_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_methodActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_METHOD_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_methodHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_METHOD_HIGHLIGHT_COLOR);
+        _methodHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_METHOD_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_methodActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_METHOD_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_methodHighlightColorB, IdentifierHighlighterSettings.DEFAULT_METHOD_HIGHLIGHT_COLOR);
     }
 
     protected void defaultClassHighlightColors() {
-        _classHighlightCB.setSelected(IdentifierHighlighterAppComponent.DEFAULT_CLASS_HIGHLIGHT_ENABLED);
-        setStringToColorButton(_classActiveHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_CLASS_ACTIVE_HIGHLIGHT_COLOR);
-        setStringToColorButton(_classHighlightColorB, IdentifierHighlighterAppComponent.DEFAULT_CLASS_HIGHLIGHT_COLOR);
+        _classHighlightCB.setSelected(IdentifierHighlighterSettings.DEFAULT_CLASS_HIGHLIGHT_ENABLED);
+        setStringToColorButton(_classActiveHighlightColorB, IdentifierHighlighterSettings.DEFAULT_CLASS_ACTIVE_HIGHLIGHT_COLOR);
+        setStringToColorButton(_classHighlightColorB, IdentifierHighlighterSettings.DEFAULT_CLASS_HIGHLIGHT_COLOR);
     }
 
     protected void updatePluginEnabled() {
@@ -430,147 +431,149 @@ public class IdentifierHighlighterConfiguration {
         return _mainPanel;
     }
 
-    public void setData(IdentifierHighlighterAppComponent data) {
-        _classHighlightCB.setSelected(data.is_classHighlightEnabled());
-        setStringToColorButton(_classActiveHighlightColorB, data.get_classActiveHighlightColor());
-        setStringToColorButton(_classHighlightColorB, data.get_classHighlightColor());
-        _methodHighlightCB.setSelected(data.is_methodHighlightEnabled());
-        setStringToColorButton(_methodActiveHighlightColorB, data.get_methodActiveHighlightColor());
-        setStringToColorButton(_methodHighlightColorB, data.get_methodHighlightColor());
-        _fieldHighlightCB.setSelected(data.is_fieldHighlightEnabled());
-        setStringToColorButton(_fieldReadActiveHighlightColorB, data.get_fieldReadActiveHighlightColor());
-        setStringToColorButton(_fieldReadHighlightColorB, data.get_fieldReadHighlightColor());
-        setStringToColorButton(_fieldWriteActiveHighlightColorB, data.get_fieldWriteActiveHighlightColor());
-        setStringToColorButton(_fieldWriteHighlightColorB, data.get_fieldWriteHighlightColor());
-        _paramHighlightCB.setSelected(data.is_paramHighlightEnabled());
-        setStringToColorButton(_paramReadActiveHighlightColorB, data.get_paramReadActiveHighlightColor());
-        setStringToColorButton(_paramReadHighlightColorB, data.get_paramReadHighlightColor());
-        setStringToColorButton(_paramWriteActiveHighlightColorB, data.get_paramWriteActiveHighlightColor());
-        setStringToColorButton(_paramWriteHighlightColorB, data.get_paramWriteHighlightColor());
-        _localHighlightCB.setSelected(data.is_localHighlightEnabled());
-        setStringToColorButton(_localReadActiveHighlightColorB, data.get_localReadActiveHighlightColor());
-        setStringToColorButton(_localReadHighlightColorB, data.get_localReadHighlightColor());
-        setStringToColorButton(_localWriteActiveHighlightColorB, data.get_localWriteActiveHighlightColor());
-        setStringToColorButton(_localWriteHighlightColorB, data.get_localWriteHighlightColor());
-        _otherHighlightCB.setSelected(data.is_otherHighlightEnabled());
-        setStringToColorButton(_otherActiveHighlightColorB, data.get_otherActiveHighlightColor());
-        setStringToColorButton(_otherHighlightColorB, data.get_otherHighlightColor());
-        _highlightLayerCB.setSelectedItem(data.get_highlightLayer());
-        _showInMarkerBarCB.setSelected(data.is_showInMarkerBar());
-        _pluginEnabledCB.setSelected(data.isPluginEnabled());
+    public void loadData(IdentifierHighlighterSettings settings) {
+        
+        _classHighlightCB.setSelected(settings.isClassHighlightEnabled());
+        setStringToColorButton(_classActiveHighlightColorB, settings.getClassActiveHighlightColor());
+        setStringToColorButton(_classHighlightColorB, settings.getClassHighlightColor());
+        _methodHighlightCB.setSelected(settings.isMethodHighlightEnabled());
+        setStringToColorButton(_methodActiveHighlightColorB, settings.getMethodActiveHighlightColor());
+        setStringToColorButton(_methodHighlightColorB, settings.getMethodHighlightColor());
+        _fieldHighlightCB.setSelected(settings.isFieldHighlightEnabled());
+        setStringToColorButton(_fieldReadActiveHighlightColorB, settings.getFieldReadActiveHighlightColor());
+        setStringToColorButton(_fieldReadHighlightColorB, settings.getFieldReadHighlightColor());
+        setStringToColorButton(_fieldWriteActiveHighlightColorB, settings.getFieldWriteActiveHighlightColor());
+        setStringToColorButton(_fieldWriteHighlightColorB, settings.getFieldWriteHighlightColor());
+        _paramHighlightCB.setSelected(settings.isParamHighlightEnabled());
+        setStringToColorButton(_paramReadActiveHighlightColorB, settings.getParamReadActiveHighlightColor());
+        setStringToColorButton(_paramReadHighlightColorB, settings.getParamReadHighlightColor());
+        setStringToColorButton(_paramWriteActiveHighlightColorB, settings.getParamWriteActiveHighlightColor());
+        setStringToColorButton(_paramWriteHighlightColorB, settings.getParamWriteHighlightColor());
+        _localHighlightCB.setSelected(settings.isLocalHighlightEnabled());
+        setStringToColorButton(_localReadActiveHighlightColorB, settings.getLocalReadActiveHighlightColor());
+        setStringToColorButton(_localReadHighlightColorB, settings.getLocalReadHighlightColor());
+        setStringToColorButton(_localWriteActiveHighlightColorB, settings.getLocalWriteActiveHighlightColor());
+        setStringToColorButton(_localWriteHighlightColorB, settings.getLocalWriteHighlightColor());
+        _otherHighlightCB.setSelected(settings.isOtherHighlightEnabled());
+        setStringToColorButton(_otherActiveHighlightColorB, settings.getOtherActiveHighlightColor());
+        setStringToColorButton(_otherHighlightColorB, settings.getOtherHighlightColor());
+        _highlightLayerCB.setSelectedItem(settings.getHighlightLayer());
+        _showInMarkerBarCB.setSelected(settings.isShowInMarkerBar());
+        _pluginEnabledCB.setSelected(settings.isPluginEnabled());
+        
         updatePluginEnabled();
     }
 
-    public void getData(IdentifierHighlighterAppComponent data) {
-        data.set_classHighlightEnabled(_classHighlightCB.isSelected());
-        data.set_classActiveHighlightColor(getStringFromColorButton(_classActiveHighlightColorB));
-        data.set_classHighlightColor(getStringFromColorButton(_classHighlightColorB));
-        data.set_methodHighlightEnabled(_methodHighlightCB.isSelected());
-        data.set_methodActiveHighlightColor(getStringFromColorButton(_methodActiveHighlightColorB));
-        data.set_methodHighlightColor(getStringFromColorButton(_methodHighlightColorB));
-        data.set_fieldHighlightEnabled(_fieldHighlightCB.isSelected());
-        data.set_fieldReadActiveHighlightColor(getStringFromColorButton(_fieldReadActiveHighlightColorB));
-        data.set_fieldReadHighlightColor(getStringFromColorButton(_fieldReadHighlightColorB));
-        data.set_fieldWriteActiveHighlightColor(getStringFromColorButton(_fieldWriteActiveHighlightColorB));
-        data.set_fieldWriteHighlightColor(getStringFromColorButton(_fieldWriteHighlightColorB));
-        data.set_paramHighlightEnabled(_paramHighlightCB.isSelected());
-        data.set_paramReadActiveHighlightColor(getStringFromColorButton(_paramReadActiveHighlightColorB));
-        data.set_paramReadHighlightColor(getStringFromColorButton(_paramReadHighlightColorB));
-        data.set_paramWriteActiveHighlightColor(getStringFromColorButton(_paramWriteActiveHighlightColorB));
-        data.set_paramWriteHighlightColor(getStringFromColorButton(_paramWriteHighlightColorB));
-        data.set_localHighlightEnabled(_localHighlightCB.isSelected());
-        data.set_localReadActiveHighlightColor(getStringFromColorButton(_localReadActiveHighlightColorB));
-        data.set_localReadHighlightColor(getStringFromColorButton(_localReadHighlightColorB));
-        data.set_localWriteActiveHighlightColor(getStringFromColorButton(_localWriteActiveHighlightColorB));
-        data.set_localWriteHighlightColor(getStringFromColorButton(_localWriteHighlightColorB));
-        data.set_otherHighlightEnabled(_otherHighlightCB.isSelected());
-        data.set_otherActiveHighlightColor(getStringFromColorButton(_otherActiveHighlightColorB));
-        data.set_otherHighlightColor(getStringFromColorButton(_otherHighlightColorB));
-        data.set_highlightLayer((String) _highlightLayerCB.getSelectedItem());
-        data.set_showInMarkerBar(_showInMarkerBarCB.isSelected());
-        data.enablePlugin(_pluginEnabledCB.isSelected());
+    public void storeData(IdentifierHighlighterSettings settings) {
+        settings.setClassHighlightEnabled(_classHighlightCB.isSelected());
+        settings.setClassActiveHighlightColor(getStringFromColorButton(_classActiveHighlightColorB));
+        settings.setClassHighlightColor(getStringFromColorButton(_classHighlightColorB));
+        settings.setMethodHighlightEnabled(_methodHighlightCB.isSelected());
+        settings.setMethodActiveHighlightColor(getStringFromColorButton(_methodActiveHighlightColorB));
+        settings.setMethodHighlightColor(getStringFromColorButton(_methodHighlightColorB));
+        settings.setFieldHighlightEnabled(_fieldHighlightCB.isSelected());
+        settings.setFieldReadActiveHighlightColor(getStringFromColorButton(_fieldReadActiveHighlightColorB));
+        settings.setFieldReadHighlightColor(getStringFromColorButton(_fieldReadHighlightColorB));
+        settings.setFieldWriteActiveHighlightColor(getStringFromColorButton(_fieldWriteActiveHighlightColorB));
+        settings.setFieldWriteHighlightColor(getStringFromColorButton(_fieldWriteHighlightColorB));
+        settings.setParamHighlightEnabled(_paramHighlightCB.isSelected());
+        settings.setParamReadActiveHighlightColor(getStringFromColorButton(_paramReadActiveHighlightColorB));
+        settings.setParamReadHighlightColor(getStringFromColorButton(_paramReadHighlightColorB));
+        settings.setParamWriteActiveHighlightColor(getStringFromColorButton(_paramWriteActiveHighlightColorB));
+        settings.setParamWriteHighlightColor(getStringFromColorButton(_paramWriteHighlightColorB));
+        settings.setLocalHighlightEnabled(_localHighlightCB.isSelected());
+        settings.setLocalReadActiveHighlightColor(getStringFromColorButton(_localReadActiveHighlightColorB));
+        settings.setLocalReadHighlightColor(getStringFromColorButton(_localReadHighlightColorB));
+        settings.setLocalWriteActiveHighlightColor(getStringFromColorButton(_localWriteActiveHighlightColorB));
+        settings.setLocalWriteHighlightColor(getStringFromColorButton(_localWriteHighlightColorB));
+        settings.setOtherHighlightEnabled(_otherHighlightCB.isSelected());
+        settings.setOtherActiveHighlightColor(getStringFromColorButton(_otherActiveHighlightColorB));
+        settings.setOtherHighlightColor(getStringFromColorButton(_otherHighlightColorB));
+        settings.setHighlightLayer((String) _highlightLayerCB.getSelectedItem());
+        settings.setShowInMarkerBar(_showInMarkerBarCB.isSelected());
+        settings.setPluginEnabled(_pluginEnabledCB.isSelected());
     }
 
-    public boolean isModified(IdentifierHighlighterAppComponent data) {
-        if (_classHighlightCB.isSelected() != data.is_classHighlightEnabled()) {
+    public boolean isModified(IdentifierHighlighterSettings settings) {
+        if (_classHighlightCB.isSelected() != settings.isClassHighlightEnabled()) {
             return (true);
         }
-        if (getStringFromColorButton(_classActiveHighlightColorB) != null ? !getStringFromColorButton(_classActiveHighlightColorB).equals(data.get_classActiveHighlightColor()) : data.get_classActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_classActiveHighlightColorB) != null ? !getStringFromColorButton(_classActiveHighlightColorB).equals(settings.getClassActiveHighlightColor()) : settings.getClassActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_classHighlightColorB) != null ? !getStringFromColorButton(_classHighlightColorB).equals(data.get_classHighlightColor()) : data.get_classHighlightColor() != null) {
+        if (getStringFromColorButton(_classHighlightColorB) != null ? !getStringFromColorButton(_classHighlightColorB).equals(settings.getClassHighlightColor()) : settings.getClassHighlightColor() != null) {
             return true;
         }
-        if (_methodHighlightCB.isSelected() != data.is_methodHighlightEnabled()) {
+        if (_methodHighlightCB.isSelected() != settings.isMethodHighlightEnabled()) {
             return (true);
         }
-        if (getStringFromColorButton(_methodActiveHighlightColorB) != null ? !getStringFromColorButton(_methodActiveHighlightColorB).equals(data.get_methodActiveHighlightColor()) : data.get_methodActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_methodActiveHighlightColorB) != null ? !getStringFromColorButton(_methodActiveHighlightColorB).equals(settings.getMethodActiveHighlightColor()) : settings.getMethodActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_methodHighlightColorB) != null ? !getStringFromColorButton(_methodHighlightColorB).equals(data.get_methodHighlightColor()) : data.get_methodHighlightColor() != null) {
+        if (getStringFromColorButton(_methodHighlightColorB) != null ? !getStringFromColorButton(_methodHighlightColorB).equals(settings.getMethodHighlightColor()) : settings.getMethodHighlightColor() != null) {
             return true;
         }
-        if (_fieldHighlightCB.isSelected() != data.is_fieldHighlightEnabled()) {
+        if (_fieldHighlightCB.isSelected() != settings.isFieldHighlightEnabled()) {
             return (true);
         }
-        if (getStringFromColorButton(_fieldReadActiveHighlightColorB) != null ? !getStringFromColorButton(_fieldReadActiveHighlightColorB).equals(data.get_fieldReadActiveHighlightColor()) : data.get_fieldReadActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_fieldReadActiveHighlightColorB) != null ? !getStringFromColorButton(_fieldReadActiveHighlightColorB).equals(settings.getFieldReadActiveHighlightColor()) : settings.getFieldReadActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_fieldReadHighlightColorB) != null ? !getStringFromColorButton(_fieldReadHighlightColorB).equals(data.get_fieldReadHighlightColor()) : data.get_fieldReadHighlightColor() != null) {
+        if (getStringFromColorButton(_fieldReadHighlightColorB) != null ? !getStringFromColorButton(_fieldReadHighlightColorB).equals(settings.getFieldReadHighlightColor()) : settings.getFieldReadHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_fieldWriteActiveHighlightColorB) != null ? !getStringFromColorButton(_fieldWriteActiveHighlightColorB).equals(data.get_fieldWriteActiveHighlightColor()) : data.get_fieldWriteActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_fieldWriteActiveHighlightColorB) != null ? !getStringFromColorButton(_fieldWriteActiveHighlightColorB).equals(settings.getFieldWriteActiveHighlightColor()) : settings.getFieldWriteActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_fieldWriteHighlightColorB) != null ? !getStringFromColorButton(_fieldWriteHighlightColorB).equals(data.get_fieldWriteHighlightColor()) : data.get_fieldWriteHighlightColor() != null) {
+        if (getStringFromColorButton(_fieldWriteHighlightColorB) != null ? !getStringFromColorButton(_fieldWriteHighlightColorB).equals(settings.getFieldWriteHighlightColor()) : settings.getFieldWriteHighlightColor() != null) {
             return true;
         }
-        if (_paramHighlightCB.isSelected() != data.is_paramHighlightEnabled()) {
+        if (_paramHighlightCB.isSelected() != settings.isParamHighlightEnabled()) {
             return (true);
         }
-        if (getStringFromColorButton(_paramReadActiveHighlightColorB) != null ? !getStringFromColorButton(_paramReadActiveHighlightColorB).equals(data.get_paramReadActiveHighlightColor()) : data.get_paramReadActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_paramReadActiveHighlightColorB) != null ? !getStringFromColorButton(_paramReadActiveHighlightColorB).equals(settings.getParamReadActiveHighlightColor()) : settings.getParamReadActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_paramReadHighlightColorB) != null ? !getStringFromColorButton(_paramReadHighlightColorB).equals(data.get_paramReadHighlightColor()) : data.get_paramReadHighlightColor() != null) {
+        if (getStringFromColorButton(_paramReadHighlightColorB) != null ? !getStringFromColorButton(_paramReadHighlightColorB).equals(settings.getParamReadHighlightColor()) : settings.getParamReadHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_paramWriteActiveHighlightColorB) != null ? !getStringFromColorButton(_paramWriteActiveHighlightColorB).equals(data.get_paramWriteActiveHighlightColor()) : data.get_paramWriteActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_paramWriteActiveHighlightColorB) != null ? !getStringFromColorButton(_paramWriteActiveHighlightColorB).equals(settings.getParamWriteActiveHighlightColor()) : settings.getParamWriteActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_paramWriteHighlightColorB) != null ? !getStringFromColorButton(_paramWriteHighlightColorB).equals(data.get_paramWriteHighlightColor()) : data.get_paramWriteHighlightColor() != null) {
+        if (getStringFromColorButton(_paramWriteHighlightColorB) != null ? !getStringFromColorButton(_paramWriteHighlightColorB).equals(settings.getParamWriteHighlightColor()) : settings.getParamWriteHighlightColor() != null) {
             return true;
         }
-        if (_localHighlightCB.isSelected() != data.is_localHighlightEnabled()) {
+        if (_localHighlightCB.isSelected() != settings.isLocalHighlightEnabled()) {
             return (true);
         }
-        if (getStringFromColorButton(_localReadActiveHighlightColorB) != null ? !getStringFromColorButton(_localReadActiveHighlightColorB).equals(data.get_localReadActiveHighlightColor()) : data.get_localReadActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_localReadActiveHighlightColorB) != null ? !getStringFromColorButton(_localReadActiveHighlightColorB).equals(settings.getLocalReadActiveHighlightColor()) : settings.getLocalReadActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_localReadHighlightColorB) != null ? !getStringFromColorButton(_localReadHighlightColorB).equals(data.get_localReadHighlightColor()) : data.get_localReadHighlightColor() != null) {
+        if (getStringFromColorButton(_localReadHighlightColorB) != null ? !getStringFromColorButton(_localReadHighlightColorB).equals(settings.getLocalReadHighlightColor()) : settings.getLocalReadHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_localWriteActiveHighlightColorB) != null ? !getStringFromColorButton(_localWriteActiveHighlightColorB).equals(data.get_localWriteActiveHighlightColor()) : data.get_localWriteActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_localWriteActiveHighlightColorB) != null ? !getStringFromColorButton(_localWriteActiveHighlightColorB).equals(settings.getLocalWriteActiveHighlightColor()) : settings.getLocalWriteActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_localWriteHighlightColorB) != null ? !getStringFromColorButton(_localWriteHighlightColorB).equals(data.get_localWriteHighlightColor()) : data.get_localWriteHighlightColor() != null) {
+        if (getStringFromColorButton(_localWriteHighlightColorB) != null ? !getStringFromColorButton(_localWriteHighlightColorB).equals(settings.getLocalWriteHighlightColor()) : settings.getLocalWriteHighlightColor() != null) {
             return true;
         }
-        if (_otherHighlightCB.isSelected() != data.is_otherHighlightEnabled()) {
+        if (_otherHighlightCB.isSelected() != settings.isOtherHighlightEnabled()) {
             return (true);
         }
-        if (getStringFromColorButton(_otherActiveHighlightColorB) != null ? !getStringFromColorButton(_otherActiveHighlightColorB).equals(data.get_otherActiveHighlightColor()) : data.get_otherActiveHighlightColor() != null) {
+        if (getStringFromColorButton(_otherActiveHighlightColorB) != null ? !getStringFromColorButton(_otherActiveHighlightColorB).equals(settings.getOtherActiveHighlightColor()) : settings.getOtherActiveHighlightColor() != null) {
             return true;
         }
-        if (getStringFromColorButton(_otherHighlightColorB) != null ? !getStringFromColorButton(_otherHighlightColorB).equals(data.get_otherHighlightColor()) : data.get_otherHighlightColor() != null) {
+        if (getStringFromColorButton(_otherHighlightColorB) != null ? !getStringFromColorButton(_otherHighlightColorB).equals(settings.getOtherHighlightColor()) : settings.getOtherHighlightColor() != null) {
             return true;
         }
-        if ((_highlightLayerCB.getSelectedItem() != null) ? (!_highlightLayerCB.getSelectedItem().equals(data.get_highlightLayer())) : (data.get_highlightLayer() != null)) {
+        if ((_highlightLayerCB.getSelectedItem() != null) ? (!_highlightLayerCB.getSelectedItem().equals(settings.getHighlightLayer())) : (settings.getHighlightLayer() != null)) {
             return true;
         }
-        if (_showInMarkerBarCB.isSelected() != data.is_showInMarkerBar()) {
+        if (_showInMarkerBarCB.isSelected() != settings.isShowInMarkerBar()) {
             return (true);
         }
-        if (_pluginEnabledCB.isSelected() != data.isPluginEnabled()) {
+        if (_pluginEnabledCB.isSelected() != settings.isPluginEnabled()) {
             return (true);
         }
         return false;
@@ -619,5 +622,21 @@ public class IdentifierHighlighterConfiguration {
             }
         }
         return (null);
+    }
+
+    public static class ColorImage extends BufferedImage {
+        protected Color _color = null;
+
+        public ColorImage(int width, int height, Color color) {
+            super(width, height, TYPE_INT_RGB);
+            _color = color;
+            Graphics2D g2d = createGraphics();
+            g2d.setPaint(_color);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
+
+        public Color getColor() {
+            return (_color);
+        }
     }
 }

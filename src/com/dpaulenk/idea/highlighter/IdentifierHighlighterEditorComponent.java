@@ -1,5 +1,6 @@
 package com.dpaulenk.idea.highlighter;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.event.CaretAdapter;
@@ -24,29 +25,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class IdentifierHighlighterEditorComponent extends CaretAdapter implements DocumentListener {
+public class IdentifierHighlighterEditorComponent extends CaretAdapter implements DocumentListener, Disposable {
     protected enum ELEMENT_TYPE {CLASS, METHOD, FIELD, PARAMETER, LOCAL}
 
-    protected IdentifierHighlighterAppComponent _appComponent = null;
-    protected Editor _editor = null;
-    protected ArrayList<RangeHighlighter> _highlights = null;
-    protected ArrayList<Boolean> _forWriting = null;
-    protected String _currentIdentifier = null;
-    protected ELEMENT_TYPE _elemType = null;
-    protected int _startElem = -1;
-    protected int _currElem = -1;
-    protected int _declareElem = -1;
-    protected boolean _ignoreEvents;
-    protected boolean _identifiersLocked = false;
-    protected PsiReferenceComparator _psiRefComp = null;
+    protected IdentifierHighlighterAppComponent highlighterComponent = null;
+    protected IdentifierHighlighterSettings highlighterSettings = null;
+    protected Editor editor = null;
+    protected ArrayList<RangeHighlighter> highlights = null;
+    protected ArrayList<Boolean> forWriting = null;
+    protected String currentIdentifier = null;
+    protected ELEMENT_TYPE elemType = null;
+    protected int startElem = -1;
+    protected int currElem = -1;
+    protected int declareElem = -1;
+    protected boolean ignoreEvents;
+    protected boolean identifiersLocked = false;
+    protected PsiReferenceComparator psiRefComp = null;
 
     public IdentifierHighlighterEditorComponent(IdentifierHighlighterAppComponent appComponent, Editor editor) {
-        _appComponent = appComponent;
-        _ignoreEvents = !_appComponent.isPluginEnabled();
-        _editor = editor;
-        _editor.getCaretModel().addCaretListener(this);
-        _editor.getDocument().addDocumentListener(this);
-        _psiRefComp = new PsiReferenceComparator();
+        highlighterComponent = appComponent;
+        highlighterSettings = highlighterComponent.getSettings();
+
+        ignoreEvents = !highlighterSettings.isPluginEnabled();
+
+        this.editor = editor;
+        this.editor.getCaretModel().addCaretListener(this);
+        this.editor.getDocument().addDocumentListener(this);
+        psiRefComp = new PsiReferenceComparator();
     }
 
     //CaretListener interface implementation
@@ -61,69 +66,69 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
     }
 
     protected void handleCaretPositionChanged(CaretEvent ce) {
-        if (_ignoreEvents || _identifiersLocked) {
+        if (ignoreEvents || identifiersLocked) {
             return;
         }
-        if (_editor == null || _editor.getProject() == null || _editor.getDocument() == null) {
+        if (editor == null || editor.getProject() == null || editor.getDocument() == null) {
             return;
         }
-        PsiFile pFile = PsiDocumentManager.getInstance(_editor.getProject()).getPsiFile(_editor.getDocument());
+        PsiFile pFile = PsiDocumentManager.getInstance(editor.getProject()).getPsiFile(editor.getDocument());
         if (pFile == null) {
             return;
         }
-        PsiElement pElem = pFile.findElementAt(_editor.getCaretModel().getOffset());
+        PsiElement pElem = pFile.findElementAt(editor.getCaretModel().getOffset());
         if (!(pElem instanceof PsiIdentifier)) {
             pElem = null;
         }
         if (pElem == null) {
-            if (_highlights != null) {
+            if (highlights != null) {
                 clearState();
             }
             return;
         }
         //We have a pElem
         //Check if different identifier than before
-        if (_highlights != null) {
+        if (highlights != null) {
             int foundElem = -1;
             TextRange pElemRange = pElem.getTextRange();
-            for (int i = 0; i < _highlights.size(); i++) {
-                RangeHighlighter highlight = _highlights.get(i);
+            for (int i = 0; i < highlights.size(); i++) {
+                RangeHighlighter highlight = highlights.get(i);
                 if ((highlight.getStartOffset() == pElemRange.getStartOffset()) && (highlight.getEndOffset() == pElemRange.getEndOffset())) {
                     foundElem = i;
                     break;
                 }
             }
             if (foundElem != -1) {
-                if (foundElem != _currElem) {
+                if (foundElem != currElem) {
                     moveIdentifier(foundElem);
-                    _startElem = foundElem;
+                    startElem = foundElem;
                 }
                 return;
             } else {
                 clearState();
             }
         }
-        _currentIdentifier = pElem.getText();
+        currentIdentifier = pElem.getText();
         final ArrayList<PsiElement> elems = new ArrayList<PsiElement>();
-        PsiReference pRef = pFile.findReferenceAt(_editor.getCaretModel().getOffset());
+        PsiReference pRef = pFile.findReferenceAt(editor.getCaretModel().getOffset());
         if (pRef == null) {
             //See if I am a declaration so search for references to me
             PsiElement pElemCtx = pElem.getContext();
             if (pElemCtx instanceof PsiClass) {
-                _elemType = ELEMENT_TYPE.CLASS;
+                elemType = ELEMENT_TYPE.CLASS;
             } else if (pElemCtx instanceof PsiMethod) {
-                _elemType = ELEMENT_TYPE.METHOD;
+                elemType = ELEMENT_TYPE.METHOD;
             } else if (pElemCtx instanceof PsiField) {
-                _elemType = ELEMENT_TYPE.FIELD;
+                elemType = ELEMENT_TYPE.FIELD;
             } else if (pElemCtx instanceof PsiParameter) {
-                _elemType = ELEMENT_TYPE.PARAMETER;
+                elemType = ELEMENT_TYPE.PARAMETER;
             } else if (pElemCtx instanceof PsiLocalVariable) {
-                _elemType = ELEMENT_TYPE.LOCAL;
+                elemType = ELEMENT_TYPE.LOCAL;
             }
             Query<PsiReference> q = ReferencesSearch.search(pElemCtx, GlobalSearchScope.fileScope(pFile));
             PsiReference qRefs[] = q.toArray(new PsiReference[0]);
             //Sort by text offset
-            Arrays.sort(qRefs, _psiRefComp);
+            Arrays.sort(qRefs, psiRefComp);
             for (PsiReference qRef : qRefs) {
                 //Find child PsiIdentifier so highlight is just on it
                 PsiElement qRefElem = qRef.getElement();
@@ -136,16 +141,16 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
                     continue;
                 }
                 //Check if I should be put in list first to keep it sorted by text offset
-                if ((_declareElem == -1) && (pElem.getTextOffset() <= qRefElemIdent.getTextOffset())) {
+                if ((declareElem == -1) && (pElem.getTextOffset() <= qRefElemIdent.getTextOffset())) {
                     elems.add(pElem);
-                    _declareElem = elems.size() - 1;
+                    declareElem = elems.size() - 1;
                 }
                 elems.add(qRefElemIdent);
             }
             //If haven't put me in list yet, put me in last
-            if (_declareElem == -1) {
+            if (declareElem == -1) {
                 elems.add(pElem);
-                _declareElem = elems.size() - 1;
+                declareElem = elems.size() - 1;
             }
         } else {
             //Resolve to declaration
@@ -157,15 +162,15 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             }
             if (pRefElem != null) {
                 if (pRefElem instanceof PsiClass) {
-                    _elemType = ELEMENT_TYPE.CLASS;
+                    elemType = ELEMENT_TYPE.CLASS;
                 } else if (pRefElem instanceof PsiMethod) {
-                    _elemType = ELEMENT_TYPE.METHOD;
+                    elemType = ELEMENT_TYPE.METHOD;
                 } else if (pRefElem instanceof PsiField) {
-                    _elemType = ELEMENT_TYPE.FIELD;
+                    elemType = ELEMENT_TYPE.FIELD;
                 } else if (pRefElem instanceof PsiParameter) {
-                    _elemType = ELEMENT_TYPE.PARAMETER;
+                    elemType = ELEMENT_TYPE.PARAMETER;
                 } else if (pRefElem instanceof PsiLocalVariable) {
-                    _elemType = ELEMENT_TYPE.LOCAL;
+                    elemType = ELEMENT_TYPE.LOCAL;
                 }
             }
             if (pRefElem != null) {
@@ -175,7 +180,7 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
                     Query<PsiReference> q = ReferencesSearch.search(pRefElemIdent.getContext(), GlobalSearchScope.fileScope(pFile));
                     PsiReference qRefs[] = q.toArray(new PsiReference[0]);
                     //Sort by text offset
-                    Arrays.sort(qRefs, _psiRefComp);
+                    Arrays.sort(qRefs, psiRefComp);
                     for (PsiReference qRef : qRefs) {
                         //Find child PsiIdentifier so highlight is just on it
                         PsiElement qRefElem = qRef.getElement();
@@ -188,25 +193,25 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
                             continue;
                         }
                         //Check if I should be put in list first to keep it sorted by text offset
-                        if ((areSameFiles(pFile, pRefElemIdent.getContainingFile())) && (_declareElem == -1) && (pRefElemIdent.getTextOffset() <= qRefElemIdent.getTextOffset())) {
+                        if ((areSameFiles(pFile, pRefElemIdent.getContainingFile())) && (declareElem == -1) && (pRefElemIdent.getTextOffset() <= qRefElemIdent.getTextOffset())) {
                             elems.add(pRefElemIdent);
-                            _declareElem = elems.size() - 1;
+                            declareElem = elems.size() - 1;
                         }
                         elems.add(qRefElemIdent);
                     }
                     if (elems.size() == 0) {
                         //Should at least put the original found element at cursor in list
                         //Check if I should be put in list first to keep it sorted by text offset
-                        if ((areSameFiles(pFile, pRefElemIdent.getContainingFile())) && (_declareElem == -1) && (pRefElemIdent.getTextOffset() <= pElem.getTextOffset())) {
+                        if ((areSameFiles(pFile, pRefElemIdent.getContainingFile())) && (declareElem == -1) && (pRefElemIdent.getTextOffset() <= pElem.getTextOffset())) {
                             elems.add(pRefElemIdent);
-                            _declareElem = elems.size() - 1;
+                            declareElem = elems.size() - 1;
                         }
                         elems.add(pElem);
                     }
                     //If haven't put me in list yet, put me in last
-                    if ((areSameFiles(pFile, pRefElemIdent.getContainingFile())) && (_declareElem == -1)) {
+                    if ((areSameFiles(pFile, pRefElemIdent.getContainingFile())) && (declareElem == -1)) {
                         elems.add(pRefElemIdent);
-                        _declareElem = elems.size() - 1;
+                        declareElem = elems.size() - 1;
                     }
                 }
             } else {
@@ -231,35 +236,35 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
 //                }
             }
         }
-        _highlights = new ArrayList<RangeHighlighter>();
-        _forWriting = new ArrayList<Boolean>();
+        highlights = new ArrayList<RangeHighlighter>();
+        forWriting = new ArrayList<Boolean>();
         for (int i = 0; i < elems.size(); i++) {
             PsiElement elem = elems.get(i);
             TextRange range = elem.getTextRange();
             //Verify range is valid against current length of document
-            if ((range.getStartOffset() >= _editor.getDocument().getTextLength()) || (range.getEndOffset() >= _editor.getDocument().getTextLength())) {
+            if ((range.getStartOffset() >= editor.getDocument().getTextLength()) || (range.getEndOffset() >= editor.getDocument().getTextLength())) {
                 continue;
             }
             boolean forWriting = isForWriting(elem);
-            _forWriting.add(forWriting);
+            this.forWriting.add(forWriting);
             RangeHighlighter rh;
             if (elem.getTextRange().equals(pElem.getTextRange())) {
-                _startElem = i;
-                _currElem = i;
-                rh = _editor.getMarkupModel().addRangeHighlighter(range.getStartOffset(), range.getEndOffset(), getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
-                if (_appComponent.is_showInMarkerBar()) {
+                startElem = i;
+                currElem = i;
+                rh = editor.getMarkupModel().addRangeHighlighter(range.getStartOffset(), range.getEndOffset(), getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
+                if (highlighterSettings.isShowInMarkerBar()) {
                     rh.setErrorStripeMarkColor(getActiveHighlightColor(forWriting).getBackgroundColor());
                 }
             } else {
-                rh = _editor.getMarkupModel().addRangeHighlighter(range.getStartOffset(), range.getEndOffset(), getHighlightLayer(), getHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
-                if (_appComponent.is_showInMarkerBar()) {
+                rh = editor.getMarkupModel().addRangeHighlighter(range.getStartOffset(), range.getEndOffset(), getHighlightLayer(), getHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
+                if (highlighterSettings.isShowInMarkerBar()) {
                     rh.setErrorStripeMarkColor(getHighlightColor(forWriting).getBackgroundColor());
                 }
             }
-            if (_appComponent.is_showInMarkerBar()) {
-                rh.setErrorStripeTooltip(_currentIdentifier + " [" + i + "]");
+            if (highlighterSettings.isShowInMarkerBar()) {
+                rh.setErrorStripeTooltip(currentIdentifier + " [" + i + "]");
             }
-            _highlights.add(rh);
+            highlights.add(rh);
         }
     }
 
@@ -323,18 +328,18 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
     }
 
     protected boolean isHighlightEnabled() {
-        if (_elemType == ELEMENT_TYPE.CLASS) {
-            return (_appComponent.is_classHighlightEnabled());
-        } else if (_elemType == ELEMENT_TYPE.METHOD) {
-            return (_appComponent.is_methodHighlightEnabled());
-        } else if (_elemType == ELEMENT_TYPE.FIELD) {
-            return (_appComponent.is_fieldHighlightEnabled());
-        } else if (_elemType == ELEMENT_TYPE.PARAMETER) {
-            return (_appComponent.is_paramHighlightEnabled());
-        } else if (_elemType == ELEMENT_TYPE.LOCAL) {
-            return (_appComponent.is_localHighlightEnabled());
+        if (elemType == ELEMENT_TYPE.CLASS) {
+            return (highlighterSettings.isClassHighlightEnabled());
+        } else if (elemType == ELEMENT_TYPE.METHOD) {
+            return (highlighterSettings.isMethodHighlightEnabled());
+        } else if (elemType == ELEMENT_TYPE.FIELD) {
+            return (highlighterSettings.isFieldHighlightEnabled());
+        } else if (elemType == ELEMENT_TYPE.PARAMETER) {
+            return (highlighterSettings.isParamHighlightEnabled());
+        } else if (elemType == ELEMENT_TYPE.LOCAL) {
+            return (highlighterSettings.isLocalHighlightEnabled());
         } else {
-            return (_appComponent.is_otherHighlightEnabled());
+            return (highlighterSettings.isOtherHighlightEnabled());
         }
     }
 
@@ -344,18 +349,18 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             return (retVal);
         }
         Color c;
-        if (_elemType == ELEMENT_TYPE.CLASS) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(_appComponent.get_classActiveHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.METHOD) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(_appComponent.get_methodActiveHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.FIELD) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? _appComponent.get_fieldWriteActiveHighlightColor() : _appComponent.get_fieldReadActiveHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.PARAMETER) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? _appComponent.get_paramWriteActiveHighlightColor() : _appComponent.get_paramReadActiveHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.LOCAL) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? _appComponent.get_localWriteActiveHighlightColor() : _appComponent.get_localReadActiveHighlightColor());
+        if (elemType == ELEMENT_TYPE.CLASS) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(highlighterSettings.getClassActiveHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.METHOD) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(highlighterSettings.getMethodActiveHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.FIELD) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? highlighterSettings.getFieldWriteActiveHighlightColor() : highlighterSettings.getFieldReadActiveHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.PARAMETER) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? highlighterSettings.getParamWriteActiveHighlightColor() : highlighterSettings.getParamReadActiveHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.LOCAL) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? highlighterSettings.getLocalWriteActiveHighlightColor() : highlighterSettings.getLocalReadActiveHighlightColor());
         } else {
-            c = IdentifierHighlighterConfiguration.getColorFromString(_appComponent.get_otherActiveHighlightColor());
+            c = IdentifierHighlighterConfiguration.getColorFromString(highlighterSettings.getOtherActiveHighlightColor());
         }
         retVal.setBackgroundColor(c);
         return (retVal);
@@ -367,25 +372,25 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             return (retVal);
         }
         Color c;
-        if (_elemType == ELEMENT_TYPE.CLASS) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(_appComponent.get_classHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.METHOD) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(_appComponent.get_methodHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.FIELD) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? _appComponent.get_fieldWriteHighlightColor() : _appComponent.get_fieldReadHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.PARAMETER) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? _appComponent.get_paramWriteHighlightColor() : _appComponent.get_paramReadHighlightColor());
-        } else if (_elemType == ELEMENT_TYPE.LOCAL) {
-            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? _appComponent.get_localWriteHighlightColor() : _appComponent.get_localReadHighlightColor());
+        if (elemType == ELEMENT_TYPE.CLASS) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(highlighterSettings.getClassHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.METHOD) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(highlighterSettings.getMethodHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.FIELD) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? highlighterSettings.getFieldWriteHighlightColor() : highlighterSettings.getFieldReadHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.PARAMETER) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? highlighterSettings.getParamWriteHighlightColor() : highlighterSettings.getParamReadHighlightColor());
+        } else if (elemType == ELEMENT_TYPE.LOCAL) {
+            c = IdentifierHighlighterConfiguration.getColorFromString(forWriting ? highlighterSettings.getLocalWriteHighlightColor() : highlighterSettings.getLocalReadHighlightColor());
         } else {
-            c = IdentifierHighlighterConfiguration.getColorFromString(_appComponent.get_otherHighlightColor());
+            c = IdentifierHighlighterConfiguration.getColorFromString(highlighterSettings.getOtherHighlightColor());
         }
         retVal.setBackgroundColor(c);
         return (retVal);
     }
 
     protected int getHighlightLayer() {
-        String highlightLayer = _appComponent.get_highlightLayer();
+        String highlightLayer = highlighterSettings.getHighlightLayer();
         if (highlightLayer.equals("SELECTION")) {
             return (HighlighterLayer.SELECTION);
         } else if (highlightLayer.equals("ERROR")) {
@@ -409,170 +414,171 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
     }
 
     public void documentChanged(DocumentEvent de) {
-        if (_ignoreEvents) {
+        if (ignoreEvents) {
             return;
         }
         caretPositionChanged(null);
     }
 
     protected void clearState() {
-        if (_highlights != null) {
-            for (RangeHighlighter highlight : _highlights) {
-                _editor.getMarkupModel().removeHighlighter(highlight);
+        if (highlights != null) {
+            for (RangeHighlighter highlight : highlights) {
+                editor.getMarkupModel().removeHighlighter(highlight);
             }
         }
-        _highlights = null;
-        _forWriting = null;
-        _currentIdentifier = null;
-        _elemType = null;
-        _startElem = -1;
-        _currElem = -1;
-        _declareElem = -1;
+        highlights = null;
+        forWriting = null;
+        currentIdentifier = null;
+        elemType = null;
+        startElem = -1;
+        currElem = -1;
+        declareElem = -1;
         unlockIdentifiers();
     }
 
+    @Override
     public void dispose() {
         clearState();
-        _editor.getCaretModel().removeCaretListener(this);
-        _editor.getDocument().removeDocumentListener(this);
-        _editor = null;
+        editor.getCaretModel().removeCaretListener(this);
+        editor.getDocument().removeDocumentListener(this);
+        editor = null;
     }
 
     public void repaint() {
-        if (_highlights == null) {
+        if (highlights == null) {
             return;
         }
-        for (int i = 0; i < _highlights.size(); i++) {
-            RangeHighlighter rh = _highlights.get(i);
-            boolean forWriting = _forWriting.get(i);
+        for (int i = 0; i < highlights.size(); i++) {
+            RangeHighlighter rh = highlights.get(i);
+            boolean forWriting = this.forWriting.get(i);
             int startOffset = rh.getStartOffset();
             int endOffset = rh.getEndOffset();
-            _editor.getMarkupModel().removeHighlighter(rh);
-            if (i == _currElem) {
-                rh = _editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
-                if (_appComponent.is_showInMarkerBar()) {
+            editor.getMarkupModel().removeHighlighter(rh);
+            if (i == currElem) {
+                rh = editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
+                if (highlighterSettings.isShowInMarkerBar()) {
                     rh.setErrorStripeMarkColor(getActiveHighlightColor(forWriting).getBackgroundColor());
                 }
             } else {
-                rh = _editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
-                if (_appComponent.is_showInMarkerBar()) {
+                rh = editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
+                if (highlighterSettings.isShowInMarkerBar()) {
                     rh.setErrorStripeMarkColor(getHighlightColor(forWriting).getBackgroundColor());
                 }
             }
-            if (_appComponent.is_showInMarkerBar()) {
-                rh.setErrorStripeTooltip(_currentIdentifier + " [" + i + "]");
+            if (highlighterSettings.isShowInMarkerBar()) {
+                rh.setErrorStripeTooltip(currentIdentifier + " [" + i + "]");
             }
-            _highlights.set(i, rh);
+            highlights.set(i, rh);
         }
     }
 
     public void enablePlugin(boolean enable) {
         clearState();
-        _ignoreEvents = !enable;
+        ignoreEvents = !enable;
     }
 
     public void startIdentifier() {
-        if (_highlights == null) {
+        if (highlights == null) {
             return;
         }
-        moveIdentifier(_startElem);
-        int offset = _highlights.get(_currElem).getStartOffset();
-        _editor.getCaretModel().moveToOffset(offset);
-        _editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+        moveIdentifier(startElem);
+        int offset = highlights.get(currElem).getStartOffset();
+        editor.getCaretModel().moveToOffset(offset);
+        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
     }
 
     public void declareIdentifier() {
-        if (_highlights == null) {
+        if (highlights == null) {
             return;
         }
-        if (_declareElem == -1) {
+        if (declareElem == -1) {
             return;
         }
-        moveIdentifier(_declareElem);
-        int offset = _highlights.get(_currElem).getStartOffset();
-        _editor.getCaretModel().moveToOffset(offset);
-        _editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+        moveIdentifier(declareElem);
+        int offset = highlights.get(currElem).getStartOffset();
+        editor.getCaretModel().moveToOffset(offset);
+        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
     }
 
     public void nextIdentifier() {
-        if (_highlights == null) {
+        if (highlights == null) {
             return;
         }
-        int newIndex = _currElem + 1;
-        if (newIndex == _highlights.size()) {
+        int newIndex = currElem + 1;
+        if (newIndex == highlights.size()) {
             return;
         }
         moveIdentifier(newIndex);
-        int offset = _highlights.get(_currElem).getStartOffset();
-        _editor.getCaretModel().moveToOffset(offset);
-        _editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+        int offset = highlights.get(currElem).getStartOffset();
+        editor.getCaretModel().moveToOffset(offset);
+        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
     }
 
     public void previousIdentifier() {
-        if (_highlights == null) {
+        if (highlights == null) {
             return;
         }
-        int newIndex = _currElem - 1;
+        int newIndex = currElem - 1;
         if (newIndex == -1) {
             return;
         }
         moveIdentifier(newIndex);
-        int offset = _highlights.get(_currElem).getStartOffset();
-        _editor.getCaretModel().moveToOffset(offset);
-        _editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+        int offset = highlights.get(currElem).getStartOffset();
+        editor.getCaretModel().moveToOffset(offset);
+        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
     }
 
     public String getCurrentIdentifier() {
-        return (_currentIdentifier);
+        return (currentIdentifier);
     }
 
     public void lockIdentifiers() {
-        if (_identifiersLocked) {
+        if (identifiersLocked) {
             return;
         }
-        _identifiersLocked = true;
+        identifiersLocked = true;
     }
 
     public void unlockIdentifiers() {
-        if (!_identifiersLocked) {
+        if (!identifiersLocked) {
             return;
         }
-        _identifiersLocked = false;
+        identifiersLocked = false;
         //Simulate a caret position change so everything is up-to-date
         caretPositionChanged(null);
     }
 
     public boolean areIdentifiersLocked() {
-        return (_identifiersLocked);
+        return (identifiersLocked);
     }
 
     protected void moveIdentifier(int index) {
         try {
-            if (_currElem != -1) {
-                RangeHighlighter rh = _highlights.get(_currElem);
-                boolean forWriting = _forWriting.get(_currElem);
+            if (currElem != -1) {
+                RangeHighlighter rh = highlights.get(currElem);
+                boolean forWriting = this.forWriting.get(currElem);
                 int startOffset = rh.getStartOffset();
                 int endOffset = rh.getEndOffset();
-                _editor.getMarkupModel().removeHighlighter(rh);
-                rh = _editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
-                if (_appComponent.is_showInMarkerBar()) {
+                editor.getMarkupModel().removeHighlighter(rh);
+                rh = editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
+                if (highlighterSettings.isShowInMarkerBar()) {
                     rh.setErrorStripeMarkColor(getHighlightColor(forWriting).getBackgroundColor());
-                    rh.setErrorStripeTooltip(_currentIdentifier + " [" + _currElem + "]");
+                    rh.setErrorStripeTooltip(currentIdentifier + " [" + currElem + "]");
                 }
-                _highlights.set(_currElem, rh);
+                highlights.set(currElem, rh);
             }
-            _currElem = index;
-            RangeHighlighter rh = _highlights.get(_currElem);
-            boolean forWriting = _forWriting.get(_currElem);
+            currElem = index;
+            RangeHighlighter rh = highlights.get(currElem);
+            boolean forWriting = this.forWriting.get(currElem);
             int startOffset = rh.getStartOffset();
             int endOffset = rh.getEndOffset();
-            _editor.getMarkupModel().removeHighlighter(rh);
-            rh = _editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
-            if (_appComponent.is_showInMarkerBar()) {
+            editor.getMarkupModel().removeHighlighter(rh);
+            rh = editor.getMarkupModel().addRangeHighlighter(startOffset, endOffset, getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
+            if (highlighterSettings.isShowInMarkerBar()) {
                 rh.setErrorStripeMarkColor(getActiveHighlightColor(forWriting).getBackgroundColor());
-                rh.setErrorStripeTooltip(_currentIdentifier + " [" + _currElem + "]");
+                rh.setErrorStripeTooltip(currentIdentifier + " [" + currElem + "]");
             }
-            _highlights.set(_currElem, rh);
+            highlights.set(currElem, rh);
         } catch (Throwable t) {
             //Ignore
         }
