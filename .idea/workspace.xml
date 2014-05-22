@@ -1,38 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9421048c-8141-482a-a781-ba2b2c4b2da3" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterConfigurable.java" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\docs\config-colorScheme.html" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\docs\config-general.html" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\docs\config-options.html" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\docs\configuring-ih.html" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\docs\ih.html" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\docs\style.css" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\helpset.hs" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\ih.jhp" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\images\config-colorScheme.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\images\config-general.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\images\config-options.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\images\highlighter.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\images\highlighter_24.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\map.xml" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\help\toc.xml" afterPath="" />
-      <change type="DELETED" beforePath="D:\Work\GitHub\identifier-highlighter-idea-plugin\src\com\dpaulenk\idea\highlighter\ColorImage.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/DeclareIdentifierAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/DeclareIdentifierAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/EnablePluginAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/EnablePluginAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterAppComponent.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterAppComponent.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterConfiguration.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterConfiguration.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterEditorComponent.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterEditorComponent.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterSettings.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterSettings.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/LockIdentifiersAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/LockIdentifiersAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/NextIdentifierAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/NextIdentifierAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/PreviousIdentifierAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/PreviousIdentifierAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/StartIdentifierAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/StartIdentifierAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/UnlockIdentifiersAction.java" afterPath="$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/actions/UnlockIdentifiersAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/META-INF/plugin.xml" afterPath="$PROJECT_DIR$/META-INF/plugin.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="9421048c-8141-482a-a781-ba2b2c4b2da3" name="Default" comment="" />
     <ignored path="identifier-highlighter-idea-plugin.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -366,8 +335,8 @@
       <file leaf-file-name="IdentifierHighlighterEditorComponent.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterEditorComponent.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.18780488" vertical-offset="2906" max-vertical-offset="10765">
-              <caret line="184" column="47" selection-start-line="184" selection-start-column="47" selection-end-line="184" selection-end-column="47" />
+            <state vertical-scroll-proportion="0.5195122" vertical-offset="2906" max-vertical-offset="10765">
+              <caret line="200" column="40" selection-start-line="200" selection-start-column="21" selection-end-line="200" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -789,7 +758,7 @@
     <configuration />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="1" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23880596" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1375,8 +1344,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/dpaulenk/idea/highlighter/IdentifierHighlighterEditorComponent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.18780488" vertical-offset="2906" max-vertical-offset="10765">
-          <caret line="184" column="47" selection-start-line="184" selection-start-column="47" selection-end-line="184" selection-end-column="47" />
+        <state vertical-scroll-proportion="0.5195122" vertical-offset="2906" max-vertical-offset="10765">
+          <caret line="200" column="40" selection-start-line="200" selection-start-column="21" selection-end-line="200" selection-end-column="21" />
           <folding />
         </state>
       </provider>
