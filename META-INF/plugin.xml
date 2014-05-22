@@ -1,221 +1,87 @@
 <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
-<idea-plugin url="http://www.jetbrains.net/confluence/display/CONTEST/Identifier+Highlighter">
-  <name>Identifier Highlighter</name>
-  <description>Highlights identifiers under caret.  If more than one instance with the same identifier is used in the file, only the usages of that specific instance are highlighted.  For parameters, local variables, and fields, a differentiation between reads and writes to that identifier are made with separate configurable colors.  Use Shift+Alt+Up and Shift+Alt+Down to navigate up and down to each highlighted occurrence.  Use Shift+Alt+Right to return to original highlighted occurrence starting point.  Use Shift+Alt+Left to go to the declaration highlighted occurrence only if exists in the same file.  Use Shift+Alt+R to rename the highlighted occurrences in the file.  Use Shift+Alt+L and Shift+Alt+U to lock and unlock the highlighting to allow movement through the file without changing the highlighted occurences.  Use Shift+Alt+T to toggle the plugin on or off.</description>
-  <version>3.40</version>
-  <vendor logo="/com/lgc/identifierhighlighter/images/highlighter_24.png" url="http://www.jetbrains.net/confluence/display/CONTEST/Identifier+Highlighter" email="scastrianni@lgc.com">Shawn Castrianni</vendor>
-  <category>Editor</category>
-  <idea-version since-build="6107"/>
-  <application-components>
-    <component>
-      <implementation-class>com.lgc.identifierhighlighter.IdentifierHighlighterAppComponent</implementation-class>
-    </component>
-  </application-components>
-  <actions>
-    <action id="NextIdentifier" class="com.lgc.identifierhighlighter.NextIdentifierAction" text="Next Identifier">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt DOWN"/>
-    </action>
-    <action id="PreviousIdentifier" class="com.lgc.identifierhighlighter.PreviousIdentifierAction" text="Previous Identifier">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt UP"/>
-    </action>
-    <action id="StartIdentifier" class="com.lgc.identifierhighlighter.StartIdentifierAction" text="Start Identifier">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt RIGHT"/>
-    </action>
-    <action id="DeclareIdentifier" class="com.lgc.identifierhighlighter.DeclareIdentifierAction" text="Declaration Identifier">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt LEFT"/>
-    </action>
-    <action id="RenameIdentifier" class="com.lgc.identifierhighlighter.RenameIdentifierAction" text="Rename Identifier">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt R"/>
-    </action>
-    <action id="LockIdentifiers" class="com.lgc.identifierhighlighter.LockIdentifiersAction" text="Lock Identifiers">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt L"/>
-    </action>
-    <action id="UnlockIdentifiers" class="com.lgc.identifierhighlighter.UnlockIdentifiersAction" text="Unlock Identifiers">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt U"/>
-    </action>
-    <action id="EnablePugin" class="com.lgc.identifierhighlighter.EnablePluginAction" text="Enable Plugin">
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt T"/>
-    </action>
-    <group>
-      <separator/>
-      <group id="IdentifierHighlighter.Menu" text="IdentifierHighlighter" popup="true">
-        <reference id="NextIdentifier"/>
-        <reference id="PreviousIdentifier"/>
-        <reference id="StartIdentifier"/>
-        <reference id="DeclareIdentifier"/>
-        <reference id="RenameIdentifier"/>
-        <reference id="LockIdentifiers"/>
-        <reference id="UnlockIdentifiers"/>
-        <reference id="EnablePugin"/>
-      </group>
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-    </group>
-  </actions>
-  <helpset file="IdentifierHighlighterHelp.jar" path="/helpset.hs"/>
-  <change-notes>
-    <![CDATA[
+<idea-plugin url="https://github.com/Fantast/identifier-highlighter-idea-plugin">
+    <name>Identifier Highlighter Again</name>
+    <description>
+        Highlights identifiers under caret.
+        If more than one instance with the same identifier is used in the file, only the usages of that specific instance are highlighted.
+        For parameters, local variables, and fields, a differentiation between reads and writes to that identifier are made with separate configurable colors.
+        Use Shift+Alt+Up and Shift+Alt+Down to navigate up and down to each highlighted occurrence.
+        Use Shift+Alt+Right to return to original highlighted occurrence starting point.
+        Use Shift+Alt+Left to go to the declaration highlighted occurrence only if exists in the same file.
+        Use Shift+Alt+L and Shift+Alt+U to lock and unlock the highlighting to allow movement through the file without changing the highlighted occurences.
+        Use Shift+Alt+T to toggle the plugin on or off.
+
+        Based on great Identifier Hightlighter plugin: http://plugins.jetbrains.com/plugin/?id=1236
+        
+        Identifier Hightlighter:
+            + more navigation shortcuts
+            + differentiates between read, writes, configurable colors
+            + doesn't use IDEA's search, so doesn't overlaps with F3 logics
+            - doesn't work in non-Java files
+        Identifier Hightlighter Reloaded:
+            + works in non-Java files
+            - works with usual search (sometimes F3 doens't work as word search anymore, but as usage search)
+            - annoying "search from the beginning" message (arguable)
+            - can be highlighted only by using IDEA's own highlighting, which only works with "lag"
+        Identifier_Hightlighter:
+            + works in non-Java files
+            - breaks usual search (sometimes F3 doens't work as word search anymore, bounded by usages only)
+            - annoying "search from the beginning" message (arguable)
+            - non-configurable colors
+        Identifier Highlighter Again
+            + works in non-Java files
+            + doesn't use IDEA's search, so doesn't overlaps with F3 logics
+            + differentiates between read, writes, configurable colors
+            + more navigation shortcuts
+    </description>
+    
+    <version>1.00</version>
+    <vendor url="https://github.com/Fantast/identifier-highlighter-idea-plugin" email="dzmitry.paulenka@gmail.com">Dzmitry Paulenka</vendor>
+    <category>Editor</category>
+    <idea-version since-build="135.690"/>
+    <application-components>
+        <component>
+            <implementation-class>com.dpaulenk.idea.highlighter.IdentifierHighlighterAppComponent</implementation-class>
+        </component>
+    </application-components>
+    <actions>
+        <action id="NextIdentifier" class="com.dpaulenk.idea.highlighter.actions.NextIdentifierAction" text="Next Identifier">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt DOWN"/>
+        </action>
+        <action id="PreviousIdentifier" class="com.dpaulenk.idea.highlighter.actions.PreviousIdentifierAction" text="Previous Identifier">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt UP"/>
+        </action>
+        <action id="StartIdentifier" class="com.dpaulenk.idea.highlighter.actions.StartIdentifierAction" text="Start Identifier">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt RIGHT"/>
+        </action>
+        <action id="DeclareIdentifier" class="com.dpaulenk.idea.highlighter.actions.DeclareIdentifierAction" text="Declaration Identifier">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt LEFT"/>
+        </action>
+        <action id="LockIdentifiers" class="com.dpaulenk.idea.highlighter.actions.LockIdentifiersAction" text="Lock Identifiers">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt L"/>
+        </action>
+        <action id="UnlockIdentifiers" class="com.dpaulenk.idea.highlighter.actions.UnlockIdentifiersAction" text="Unlock Identifiers">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt U"/>
+        </action>
+        <action id="EnablePugin" class="com.dpaulenk.idea.highlighter.actions.EnablePluginAction" text="Enable Plugin">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt T"/>
+        </action>
+        <group id="IdentifierHighlighterReborn.Menu" text="IdentifierHighlighter" popup="true">
+            <separator/>
+            <reference ref="NextIdentifier"/>
+            <reference ref="PreviousIdentifier"/>
+            <reference ref="StartIdentifier"/>
+            <reference ref="DeclareIdentifier"/>
+            <reference ref="LockIdentifiers"/>
+            <reference ref="UnlockIdentifiers"/>
+            <reference ref="EnablePugin"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </group>
+    </actions>
+    <helpset file="IdentifierHighlighterHelp.jar" path="/helpset.hs"/>
+    <change-notes>
+        <![CDATA[
     <ul>
-      <li>3.40
-        <ol>
-          <li>Added online help.</li>
-        </ol>
-      </li>
-      <li>3.26
-        <ol>
-          <li>Try to protect against exceptions in the resolve method.</li>
-        </ol>
-      </li>
-      <li>3.25
-        <ol>
-          <li>Added global ability to toggle the plugin on or off with Shift+Alt+T.</li>
-          <li>This toggle is also available in the settings dialog.</li>
-          <li>Added the differentiation between reads and writes of parameters, local variables, and fields with separate colors. These colors are configurable in the settings dialog.</li>
-        </ol>
-      </li>
-      <li>3.10
-        <ol>
-          <li>Added marker bar/right gutter highlighting and tooltips.</li>
-          <li>Also added the ability to configure this new option in the configuration panel.</li>
-        </ol>
-      </li>
-      <li>3.02
-        <ol>
-          <li>Grouped the editor popup menu actions into a cascade menu item.</li>
-        </ol>
-      </li>
-      <li>3.01
-        <ol>
-          <li>Fixed a bug in the new locking feature. The locking/unlocking worked, but the intent was to be able to edit the file while it was locked. This part did not work. Now it does and it works quite well now.</li>
-          <li>I also simplified some code so hopefully I didn't introduce some new bugs.</li>
-        </ol>
-      </li>
-      <li>3.00
-        <ol>
-          <li>Added new feature called locking. You can now lock the current set of identifier highlighting so that you can move the cursor throughout the file without losing the highlighting. This will allow you to edit a different part of the file while keeping the highlighting intact. You can then continue to navigate to each identifier occurrence as before.</li>
-          <li>Use Shift+Alt+L and Shift+Alt+U to lock and unlock respectively.</li>
-        </ol>
-      </li>
-      <li>2.82
-        <ol>
-          <li>Sorted usages by text offset to be compatible with Selena release.</li>
-        </ol>
-      </li>
-      <li>2.81
-        <ol>
-          <li>More Null pointer checking to help with 7.x.</li>
-        </ol>
-      </li>
-        </ol>
-      </li>
-      <li>2.80
-        <ol>
-          <li>Try to make compatible with Idea 7.x by using invokeLater.</li>
-        </ol>
-      </li>
-      <li>2.77
-        <ol>
-          <li>Try to fix an exception with -1 array index.</li>
-        </ol>
-      </li>
-      <li>2.76
-        <ol>
-          <li>Try to fix an exception with bad document length.</li>
-        </ol>
-      </li>
-      <li>2.75
-        <ol>
-          <li>Fixed a small bug to make it work properly with JSP files.</li>
-        </ol>
-      </li>
-      <li>2.72
-        <ol>
-          <li>Initialize the rename identifier dialog with the current identifier value to make small edits quicker.</li>
-        </ol>
-      </li>
-      <li>2.71
-        <ol>
-          <li>WARNING, the default hotkeys have been changed!!!!!</li>
-          <li>Due to a few complaints that I chose hotkeys that were already used, I changed to Shift+Alt+ where is Up, Down, Left, Right, or R.</li>
-          <li>You can change these to whatever you like in your keymapping.</li>
-        </ol>
-      </li>
-      <li>2.70
-        <ol>
-          <li>Added Alt+R to allow renaming the highlighted identifier occurrences.</li>
-        </ol>
-      </li>
-      <li>2.61
-        <ol>
-          <li>Found an exception that OpenAPI catches internally so I can't catch it myself. Had to check for it before it happens.</li>
-        </ol>
-      </li>
-      <li>2.60
-        <ol>
-          <li>Fixed browsing files from outside the current project like JDK's src.zip.</li>
-        </ol>
-      </li>
-      <li>2.57
-        <ol>
-          <li>Improved handling of declaration outside current file.</li>
-          <li>Fixed some ArrayIndexOutOfBounds exceptions when browsing JDK src.zip files.</li>
-        </ol>
-      </li>
-      <li>2.55
-        <ol>
-          <li>Added quick way to set all colors for all identifier types.</li>
-        </ol>
-      </li>
-      <li>2.50
-        <ol>
-          <li>Improved UI for setting colors with a ColorButton component.</li>
-          <li>Also, added tons more customizations so that you can independently enable/disable and change colors for different types of identifiers like Classes, Methods, Fields, Parameters, Local Variables, and Other.</li>
-        </ol>
-      </li>
-      <li>2.02
-        <ol>
-          <li>Fixed bug when variable started with same letters as its type.</li>
-        </ol>
-      </li>
-      <li>2.01
-        <ol>
-          <li>Fixed a few stupid bugs.</li>
-        </ol>
-      </li>
-      <li>2.00
-        <ol>
-          <li>I finally got the functionality I wanted.</li>
-          <li>Now only the usages of the specific instance of the identifier are highlighted.</li>
-          <li>So if you have the same name used for more than one local variable througout the file, for example, only the usages of that specific local variable are highlighted.</li>
-          <li>This allowed me to add Alt+Left to go to the highlighted occurrence where the variable is declared.</li>
-          <li>However, if the declared occurrence is in another file, it will NOT go there.</li>
-        </ol>
-      </li>
-      <li>1.51
-        <ol>
-          <li>Fix another NPE.</li>
-        </ol>
-      </li>
-      <li>1.50
-        <ol>
-          <li>Add configuration dialog to control highlight colors and highlighting layer in editor.</li>
-          <li>Dialog obtained from main settings panel.</li>
-        </ol>
-      </li>
-      <li>1.03
-        <ol>
-          <li>Fix another NPE. Add DocumentListener to handles changes to document better.</li>
-        </ol>
-      </li>
-      <li>1.02
-        <ol>
-          <li>Fix another NPE.</li>
-        </ol>
-      </li>
-      <li>1.01
-        <ol>
-          <li>Fix a NPE.</li>
-        </ol>
-      </li>
       <li>1.00
         <ol>
           <li>Initial version.</li>
@@ -223,5 +89,5 @@
       </li>
     </ul>
     ]]>
-  </change-notes>
+    </change-notes>
 </idea-plugin>
