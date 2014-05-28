@@ -1,5 +1,7 @@
 package com.dpaulenk.idea.highlighter;
 
+import com.intellij.codeInsight.TargetElementUtilBase;
+import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -81,6 +83,9 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         });
     }
 
+    /**
+     * see com.intellij.codeInsight.highlighting.HighlightUsagesHandler for example
+     */
     private void updateHighlights() {
         if (ignoreEvents || identifiersLocked || editor == null || editor.getProject() == null) {
             return;
@@ -90,44 +95,69 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         if (file == null) {
             return;
         }
-        
+
         int caretOffset = editor.getCaretModel().getOffset();
-        
+
         PsiElement element = file.findElementAt(caretOffset);
-        if (element == null) {
+        if (element == null || element instanceof PsiWhiteSpace) {
             clearState();
             return;
         }
-        
+
         if (searchInAlreadyHighlighted(element)) {
             return;
         }
 
         currentIdentifier = element.getText();
 
-        ArrayList<PsiElement> usages = null;
-        PsiReference reference = file.findReferenceAt(caretOffset);
-        if (reference == null) {
-            usages = searchFromElement(file, element);
-        } else {
-            usages = searchFromDeclaration(file, element, reference.resolve());
-            if (usages == null) {
-                usages = searchSimpleText(file, element);
+        PsiElement targetElement = getTargetElement(editor, file);
+        if (targetElement != null && targetElement != file) {
+            if (!(targetElement instanceof NavigationItem)) {
+                targetElement = targetElement.getNavigationElement();
             }
         }
+
+        ArrayList<PsiElement> usages = searchFromDeclaration(file, element, targetElement);
+        if (usages == null) {
+            usages = searchSimpleText(file, element);
+        }
+
+//        ArrayList<PsiElement> usages = null;
+//        PsiReference reference = file.findReferenceAt(caretOffset);
+//        if (reference == null) {
+//            usages = searchFromElement(file, element);
+//        } else {
+//            usages = searchFromDeclaration(file, element, reference.resolve());
+//            if (usages == null) {
+//                usages = searchSimpleText(file, element);
+//            }
+//        }
 
         createHighlights(element, usages);
     }
 
-    private boolean searchInAlreadyHighlighted(@NotNull PsiElement pElem) {
-        //We have a pElem
+    @Nullable
+    private static PsiElement getTargetElement(Editor editor, PsiFile file) {
+        PsiElement target = TargetElementUtilBase.findTargetElement(editor, TargetElementUtilBase.getInstance().getReferenceSearchFlags());
+
+        if (target == null) {
+            int offset = TargetElementUtilBase.adjustOffset(file, editor.getDocument(), editor.getCaretModel().getOffset());
+            PsiElement element = file.findElementAt(offset);
+            if (element == null) return null;
+        }
+
+        return target;
+    }
+
+    private boolean searchInAlreadyHighlighted(@NotNull PsiElement element) {
+        //We have a element
         //Check if different identifier than before
         if (highlights != null) {
             int foundElem = -1;
-            TextRange pElemRange = pElem.getTextRange();
+            TextRange elementRange = element.getTextRange();
             for (int i = 0; i < highlights.size(); i++) {
                 RangeHighlighter highlight = highlights.get(i);
-                if ((highlight.getStartOffset() == pElemRange.getStartOffset()) && (highlight.getEndOffset() == pElemRange.getEndOffset())) {
+                if ((highlight.getStartOffset() == elementRange.getStartOffset()) && (highlight.getEndOffset() == elementRange.getEndOffset())) {
                     foundElem = i;
                     break;
                 }
@@ -144,34 +174,16 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         }
         return false;
     }
-    
-    private ArrayList<PsiElement> searchFromElement(@NotNull PsiFile file, @NotNull PsiElement currentElement) {
-        //TODO:!!!
-        
-        TextRange currentRange = currentElement.getTextRange();
-        PsiElement maybeDeclarationElement = currentElement;
-        while (maybeDeclarationElement != null) {
-            ArrayList<PsiElement> usages = searchFromDeclaration(file, currentElement, maybeDeclarationElement);
-
-            currentElement = currentElement.getParent();
-            if (!currentElement.getTextRange().equals(currentRange)) {
-                break;
-            }
-        }
-        
-        return null;
-    }
-    
-    private ArrayList<PsiElement> searchFromDeclaration(@NotNull PsiFile file, @NotNull PsiElement currentElement, @Nullable PsiElement declarationElement) {
+   
+    private ArrayList<PsiElement> searchFromDeclaration(@NotNull PsiFile file, PsiElement element, @Nullable PsiElement declarationElement) {
         //See if element is a declaration and search for references to it
         if (declarationElement == null) {
             return null;
         }
 
         PsiFile declarationFile = declarationElement.getContainingFile();
-
-        String elementText = currentElement.getText();
-        int elementOffset = currentElement.getTextOffset();
+        String declarationText = declarationElement.getText();
+        int declarationOffset = declarationElement.getTextOffset();
         
         elemType = getElementType(declarationElement);
         
@@ -183,15 +195,16 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
 
         final ArrayList<PsiElement> usages = new ArrayList<PsiElement>();
         for (PsiReference ref : refs) {
-            PsiElement refElement = findRefElementWithText(ref.getElement(), elementText);
+            //todo: refElement should be the one in original refElement with the same text...
+            PsiElement refElement = findRefElementWithText(ref, declarationText);
             if (refElement != null) {
                 
                 //Skip elements from other files
                 if (sameFiles(file, refElement.getContainingFile())) {
 
                     //Check if declaration should be put in list first to keep it sorted by text offset
-                    if (declareElem == -1 && elementOffset <= refElement.getTextOffset() && sameFiles(file, declarationFile)) {
-                        usages.add(currentElement);
+                    if (declareElem == -1 && declarationOffset <= refElement.getTextOffset() && sameFiles(file, declarationFile)) {
+                        usages.add(declarationElement);
                         declareElem = usages.size() - 1;
                     }
                     usages.add(refElement);
@@ -201,58 +214,43 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
        
         //If haven't put declaration in the list yet, put it last
         if (declareElem == -1 && sameFiles(file, declarationFile)) {
-            usages.add(currentElement);
+            usages.add(declarationElement);
             declareElem = usages.size() - 1;
         }
         
         return usages;
     }
 
-    protected PsiElement findRefElementWithText(@NotNull PsiElement refElement, String elementText) {
-        if (refElement.getText().equals(elementText)) {
+    protected PsiElement findRefElementWithText(@NotNull PsiReference reference, String elementText) {
+        TextRange refRange = reference.getRangeInElement();
+        PsiElement refElement = reference.getElement();
+        
+        String refText = refElement.getText().substring(refRange.getStartOffset(), refRange.getEndOffset());
+        
+        if (refText.equals(elementText)) {
             return refElement;
         }
-
-        //turn it off for now, so we only searching the top-level reference element
-        if (1 == 2) {
-            //Packages don't implement getChildren yet they don't throw an exception.  It is caught internally so I can't catch it.
-            if (refElement instanceof PsiPackage) {
-                return null;
-            }
-
-            PsiElement children[] = refElement.getChildren();
-            if (children.length == 0) {
-                return null;
-            }
-            for (PsiElement child : children) {
-                PsiElement foundElem = findRefElementWithText(child, elementText);
-                if (foundElem != null) {
-                    return foundElem;
-                }
-            }
-        }
         return null;
-    }
 
-    protected PsiIdentifier findChildIdentifier(PsiElement refElement, String elementText) {
-        if ((refElement instanceof PsiIdentifier) && (refElement.getText().equals(elementText))) {
-            return (PsiIdentifier) refElement;
-        }
-        //Packages don't implement getChildren yet they don't throw an exception.  It is caught internally so I can't catch it.
-        if (refElement instanceof PsiPackage) {
-            return null;
-        }
-        PsiElement children[] = refElement.getChildren();
-        if (children.length == 0) {
-            return null;
-        }
-        for (PsiElement child : children) {
-            PsiIdentifier foundElem = findChildIdentifier(child, elementText);
-            if (foundElem != null) {
-                return foundElem;
-            }
-        }
-        return null;
+//        //turn it off for now, so we only searching the top-level reference element
+//        if (1 == 2) {
+//            //Packages don't implement getChildren yet they don't throw an exception.  It is caught internally so I can't catch it.
+//            if (reference instanceof PsiPackage) {
+//                return null;
+//            }
+//
+//            PsiElement children[] = reference.getChildren();
+//            if (children.length == 0) {
+//                return null;
+//            }
+//            for (PsiElement child : children) {
+//                PsiElement foundElem = findRefElementWithText(child, elementText);
+//                if (foundElem != null) {
+//                    return foundElem;
+//                }
+//            }
+//        }
+//        return null;
     }
 
     private ElementType getElementType(PsiElement element) {
