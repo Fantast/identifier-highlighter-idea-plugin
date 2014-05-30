@@ -117,23 +117,12 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             }
         }
 
-        ArrayList<PsiElement> usages = searchFromDeclaration(file, element, targetElement);
-        if (usages == null) {
-            usages = searchSimpleText(file, element);
+        SearchResult searchResult = searchFromDeclaration(file, element, targetElement);
+        if (searchResult == null) {
+            searchResult = searchSimpleText(file, element);
         }
 
-//        ArrayList<PsiElement> usages = null;
-//        PsiReference reference = file.findReferenceAt(caretOffset);
-//        if (reference == null) {
-//            usages = searchFromElement(file, element);
-//        } else {
-//            usages = searchFromDeclaration(file, element, reference.resolve());
-//            if (usages == null) {
-//                usages = searchSimpleText(file, element);
-//            }
-//        }
-
-        createHighlights(element, usages);
+        createHighlights(element, searchResult.elements, searchResult.ranges);
     }
 
     @Nullable
@@ -175,14 +164,14 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         return false;
     }
    
-    private ArrayList<PsiElement> searchFromDeclaration(@NotNull PsiFile file, PsiElement element, @Nullable PsiElement declarationElement) {
-        //See if element is a declaration and search for references to it
+    private SearchResult searchFromDeclaration(@NotNull PsiFile file, PsiElement element, @Nullable PsiElement declarationElement) {
         if (declarationElement == null) {
             return null;
         }
 
         PsiFile declarationFile = declarationElement.getContainingFile();
-        String declarationText = declarationElement.getText();
+//        String declarationText = declarationElement.getText();
+        TextRange declarationRange = declarationElement.getTextRange();
         int declarationOffset = declarationElement.getTextOffset();
         
         elemType = getElementType(declarationElement);
@@ -194,31 +183,51 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         Arrays.sort(refs, psiRefComp);
 
         final ArrayList<PsiElement> usages = new ArrayList<PsiElement>();
+        final ArrayList<TextRange> ranges = new ArrayList<TextRange>();
         for (PsiReference ref : refs) {
             //todo: refElement should be the one in original refElement with the same text...
-            PsiElement refElement = findRefElementWithText(ref, declarationText);
-            if (refElement != null) {
-                
-                //Skip elements from other files
-                if (sameFiles(file, refElement.getContainingFile())) {
+//            PsiElement refElement = findRefElementWithText(ref, declarationText);
+//            if (refElement != null) {
+//
+//                //Skip elements from other files
+//                if (sameFiles(file, refElement.getContainingFile())) {
+//
+//                    //Check if declaration should be put in list first to keep it sorted by text offset
+//                    if (declareElem == -1 && declarationOffset <= refElement.getTextOffset() && sameFiles(file, declarationFile)) {
+//                        usages.add(declarationElement);
+//                        declareElem = usages.size() - 1;
+//                    }
+//                    usages.add(refElement);
+//                }
+            PsiElement refElement = ref.getElement();
+            TextRange range = globalRange(refElement.getTextRange(), ref.getRangeInElement());
+            
+            //Skip elements from other files
+            if (sameFiles(file, refElement.getContainingFile())) {
 
-                    //Check if declaration should be put in list first to keep it sorted by text offset
-                    if (declareElem == -1 && declarationOffset <= refElement.getTextOffset() && sameFiles(file, declarationFile)) {
-                        usages.add(declarationElement);
-                        declareElem = usages.size() - 1;
-                    }
-                    usages.add(refElement);
+                //Check if declaration should be put in list first to keep it sorted by text offset
+                if (declareElem == -1 && declarationOffset <= range.getStartOffset() && sameFiles(file, declarationFile)) {
+                    usages.add(declarationElement);
+                    ranges.add(declarationRange);
+                    declareElem = usages.size() - 1;
                 }
+                usages.add(refElement);
+                ranges.add(range);
             }
         }
        
         //If haven't put declaration in the list yet, put it last
         if (declareElem == -1 && sameFiles(file, declarationFile)) {
             usages.add(declarationElement);
+            ranges.add(declarationRange);
             declareElem = usages.size() - 1;
         }
         
-        return usages;
+        return new SearchResult(usages, ranges);
+    }
+    
+    private TextRange globalRange(TextRange parentRange, TextRange subRange) {
+        return new TextRange(parentRange.getStartOffset() + subRange.getStartOffset(), parentRange.getStartOffset() + subRange.getEndOffset());
     }
 
     protected PsiElement findRefElementWithText(@NotNull PsiReference reference, String elementText) {
@@ -269,10 +278,11 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         }
     }
 
-    private ArrayList<PsiElement> searchSimpleText(@NotNull PsiFile file, @NotNull PsiElement element) {
+    private SearchResult searchSimpleText(@NotNull PsiFile file, @NotNull PsiElement element) {
         elemType = OTHER;
         
         final ArrayList<PsiElement> usages = new ArrayList<PsiElement>();
+        final ArrayList<TextRange> ranges = new ArrayList<TextRange>();
 
         //No declaration found, so resort to simple string search
         PsiSearchHelper search = PsiSearchHelper.SERVICE.getInstance(element.getProject());
@@ -282,24 +292,27 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             public boolean execute(PsiElement ident, int offsetInElement) {
                 if (ident.getText().equals(elementText)) {
                     usages.add(ident);
+                    ranges.add(ident.getTextRange());
                 }
                 return true;
             }
         }, GlobalSearchScope.fileScope(file), elementText, UsageSearchContext.ANY, true);
 
-        return usages;
+        return new SearchResult(usages, ranges);
     }
 
-    private void createHighlights(PsiElement element, ArrayList<PsiElement> usages) {
+    private void createHighlights(PsiElement currentElement, ArrayList<PsiElement> usages, ArrayList<TextRange> ranges) {
         if (usages == null) {
             return;
         }
-        
+
+        TextRange currentElementRange = currentElement.getTextRange();
+
         highlights = new ArrayList<RangeHighlighter>();
         forWriting = new ArrayList<Boolean>();
         for (int i = 0; i < usages.size(); i++) {
             PsiElement elem = usages.get(i);
-            TextRange range = elem.getTextRange();
+            TextRange range = ranges.get(i);
             //Verify range is valid against current length of document
             if ((range.getStartOffset() >= editor.getDocument().getTextLength()) || (range.getEndOffset() >= editor.getDocument().getTextLength())) {
                 continue;
@@ -307,7 +320,7 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             boolean forWriting = isForWriting(elem);
             this.forWriting.add(forWriting);
             RangeHighlighter rh;
-            if (elem.getTextRange().equals(element.getTextRange())) {
+            if (range.equals(currentElementRange)) {
                 startElem = i;
                 currElem = i;
                 rh = editor.getMarkupModel().addRangeHighlighter(range.getStartOffset(), range.getEndOffset(), getHighlightLayer(), getActiveHighlightColor(forWriting), HighlighterTargetArea.EXACT_RANGE);
@@ -575,6 +588,16 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
             int offset1 = ref1.getElement().getTextOffset();
             int offset2 = ref2.getElement().getTextOffset();
             return offset1 - offset2;
+        }
+    }
+    
+    private static class SearchResult {
+        final ArrayList<PsiElement> elements;
+        final ArrayList<TextRange> ranges;
+
+        private SearchResult(ArrayList<PsiElement> elements, ArrayList<TextRange> ranges) {
+            this.elements = elements;
+            this.ranges = ranges;
         }
     }
 }
