@@ -3,7 +3,6 @@ package com.dpaulenk.idea.highlighter;
 import com.intellij.codeInsight.TargetElementUtilBase;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.event.CaretAdapter;
@@ -14,6 +13,7 @@ import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.DumbServiceImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -76,7 +76,8 @@ public class IdentifierHighlighterEditorComponent extends CaretAdapter implement
         if (project != null && DumbServiceImpl.getInstance(project).isDumb()) {
             return;
         }
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
+        DumbService.getInstance(project).smartInvokeLater(new Runnable() {
+            @Override
             public void run() {
                 updateHighlights();
             }
